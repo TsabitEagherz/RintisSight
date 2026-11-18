@@ -1,0 +1,18 @@
+{% extends 'base.html' %}{% block title %}Asesmen & Ide · RintisSight{% endblock %}
+{% block content %}
+<div class="page-heading"><div><div class="eyebrow">MULAI DARI DIRIMU</div><h1>Ide usaha yang masuk akal untukmu</h1><p>Saring pilihan berdasarkan modal, waktu, dan kemampuan yang kamu punya.</p></div><span class="step-pill">ASESMEN · 2 MENIT</span></div>
+<form class="panel form-panel" method="post" action="{{ url_for('assessment') }}">
+  <div class="panel-heading"><div><span class="eyebrow">PROFIL PERINTIS</span><h2>Ceritakan kondisimu</h2></div><span class="form-step">01 / 02</span></div>
+  <label class="field"><span>Nama panggilan atau nama usaha</span><input name="name" maxlength="80" value="{{ profile['name'] if profile else '' }}" placeholder="Contoh: Rani / Dapur Rani"></label>
+  <div class="field-grid">
+    <label class="field"><span>Modal yang siap digunakan</span><div class="input-prefix"><b>Rp</b><input type="number" name="capital" min="250000" step="250000" value="{{ profile['capital'] if profile and profile['capital'] else 5000000 }}" required></div></label>
+    <label class="field"><span>Seberapa paham tentang bisnis?</span><div class="range-wrap"><input type="range" name="knowledge" min="1" max="5" value="{{ profile['knowledge'] if profile and profile['knowledge'] else 2 }}" oninput="this.nextElementSibling.value=this.value"><output>{{ profile['knowledge'] if profile and profile['knowledge'] else 2 }}</output><small>1 · Baru belajar <i></i> 5 · Berpengalaman</small></div></label>
+    <label class="field"><span>Waktu luang per hari</span><div class="input-suffix"><input type="number" name="hours" min="1" max="12" value="{{ profile['hours'] if profile and profile['hours'] else 3 }}" required><b>jam</b></div></label>
+    <label class="field"><span>Kondisi usahamu saat ini</span><select name="mode"><option {{ 'selected' if not profile or profile['mode']=='Baru merintis' else '' }}>Baru merintis</option><option {{ 'selected' if profile and profile['mode']=='Sudah punya usaha' else '' }}>Sudah punya usaha</option></select></label>
+  </div>
+  <fieldset class="field skill-field"><legend>Kemampuan yang kamu punya <small>Pilih semua yang sesuai</small></legend><div class="skill-list">{% for skill in skills_list %}<label class="skill-option"><input type="checkbox" name="skills" value="{{ skill }}" {{ 'checked' if profile and skill in (profile['skills'] or '').split(',') else '' }}><span>{{ skill }}</span></label>{% endfor %}</div></fieldset>
+  <div class="form-footer"><span>Rekomendasi adalah inspirasi awal, bukan jaminan hasil usaha.</span><button class="button primary" type="submit">Lihat rekomendasi <span>→</span></button></div>
+</form>
+{% if recommendations %}<div class="section-head"><div><div class="eyebrow">HASIL ASESMENMU</div><h2>Tiga ide untuk dipertimbangkan</h2></div><span class="section-note">Pilih yang paling dekat dengan minatmu</span></div>
+<section class="idea-grid">{% for idea in recommendations %}<article class="idea-card"><div class="idea-top"><span class="fit-pill">KECOCOKAN {{ idea.fit }}%</span><span class="idea-sector">{{ idea.sector }}</span></div><h3>{{ idea.name }}</h3><p>{{ idea.why }}</p><div class="idea-cost"><span>Perkiraan modal awal</span><strong>{{ money(idea.cost) }}</strong></div><form method="post" action="{{ url_for('choose_idea', index=loop.index0) }}"><button class="button {{ 'primary' if selected==idea.name else 'outline' }}" type="submit">{{ 'Dipilih' if selected==idea.name else 'Pilih ide ini' }} <span>→</span></button></form></article>{% endfor %}</section>{% endif %}
+{% endblock %}

@@ -1,29 +1,40 @@
 # RintisSight
 
-Prototipe pendamping dan analitik UMKM berbasis Streamlit: asesmen ide, workspace dengan simulasi 30 hari, pencatatan dan impor CSV, dashboard enam grafik, simulator BEP, konsultasi AI opsional, serta pratinjau label.
+Prototipe web pendamping UMKM berbasis Flask. Fitur: landing page, asesmen ide, dashboard analitik enam grafik, pencatatan dan impor/ekspor CSV, simulator BEP, konsultan Gemini dengan fallback demo, serta pratinjau label produk.
 
-## Menjalankan
+## Menjalankan di Windows PowerShell
+
+Jalankan dari folder proyek:
 
 ```powershell
 python -m venv .venv
 .venv\Scripts\Activate.ps1
 pip install -r requirements.txt
-streamlit run app.py
+python app.py
+```
+
+Buka `http://127.0.0.1:5000` di browser. Jika PowerShell menolak aktivasi environment, jalankan perintah berikut untuk terminal saat ini, lalu ulangi aktivasi:
+
+```powershell
+Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
 ```
 
 ## Mengaktifkan Gemini
 
-1. Pasang dependensi proyek: `pip install -r requirements.txt` (sudah mencakup paket resmi `google-genai`).
-2. Buat API key Gemini di [Google AI Studio](https://aistudio.google.com/app/apikey).
-3. Buka PowerShell di folder proyek dan tetapkan key untuk terminal yang sedang dipakai:
+1. Buat atau salin API key di [Google AI Studio](https://aistudio.google.com/app/apikey).
+2. Di terminal PowerShell yang sama, atur key dan jalankan aplikasi:
 
    ```powershell
    $env:GEMINI_API_KEY = "tempel-api-key-di-sini"
+   python app.py
    ```
 
-4. Dari terminal yang sama jalankan `streamlit run app.py`.
-5. Buka menu **Konsultan AI**. Jika API key terbaca, aplikasi mengirim ringkasan profil usaha, omzet, laba, margin, serta pertanyaan pengguna ke Gemini. Jika key belum terpasang atau API gagal, aplikasi menggunakan jawaban demo.
+3. Buka menu **Konsultan AI**. Tanpa key atau bila API tidak tersedia, konsultan memakai jawaban demo.
 
-Variabel `$env:` hanya berlaku selama terminal itu masih terbuka. Untuk pemakaian lebih tetap, atur `GEMINI_API_KEY` melalui Environment Variables Windows lalu buka terminal baru. Jangan menaruh API key di `app.py`, membagikannya, atau mengunggahnya ke Git.
+Kode memakai model `gemini-3.8-flash` secara default. Model dapat diganti lewat variabel `GEMINI_MODEL`. API key tidak disimpan di source code atau database. `$env:` berlaku hanya untuk terminal yang sedang terbuka; jangan pernah unggah atau bagikan key. SDK Gemini yang digunakan adalah paket resmi `google-genai`.
 
-SQLite `rintissight.db` dibuat otomatis. Data awal merupakan data sintetis untuk demonstrasi.
+Untuk penggunaan yang lebih aman di luar komputer lokal, tetapkan `FLASK_SECRET_KEY` dengan nilai acak panjang sebelum menjalankan aplikasi. Jangan aktifkan `FLASK_DEBUG` di server publik.
+
+## Data
+
+Database `rintissight.db` dibuat otomatis pada saat pertama dijalankan. Data awal merupakan data sintetis 30 hari untuk demonstrasi; catatan dan impor transaksi disimpan di database yang sama.
